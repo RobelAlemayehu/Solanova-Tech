@@ -5,9 +5,7 @@ export default function Home() {
         <h1 className="text-6xl font-black tracking-tight bg-gradient-to-r from-teal-400 via-cyan-500 to-emerald-400 bg-clip-text text-transparent">
           PropList
         </h1>
-        <p className="text-slate-400 text-xl font-medium tracking-wide">
-          coming soon
-        </p>
+        <p className="text-slate-400 text-xl font-medium tracking-wide">coming soon</p>
         <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-emerald-500 mx-auto rounded-full opacity-60"></div>
       </div>
     </main>

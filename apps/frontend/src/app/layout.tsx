@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "PropList",
-  description: "PropList - Multi-tenant property listing platform",
+  title: 'PropList',
+  description: 'PropList - Multi-tenant property listing platform',
 };
 
 export default function RootLayout({
