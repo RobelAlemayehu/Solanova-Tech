@@ -1,0 +1,16 @@
+{
+  "name": "proplist-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PropList - Multi-tenant property listing platform monorepo",
+  "scripts": {
+    "dev": "pnpm --filter \"*\" dev",
+    "build": "pnpm --filter \"*\" build",
+    "start": "pnpm --filter \"*\" start",
+    "lint": "pnpm --filter \"*\" lint"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
