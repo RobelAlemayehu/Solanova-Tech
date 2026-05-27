@@ -5,6 +5,7 @@ import { envValidationSchema } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
+import { PropertiesModule } from './properties/properties.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
       envFilePath: '.env',
     }),
     AuthModule,
+    PropertiesModule,
   ],
   controllers: [],
   providers: [
