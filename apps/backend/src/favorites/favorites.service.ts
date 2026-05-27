@@ -32,4 +32,23 @@ export class FavoritesService {
     await this.favoriteModel.create({ userId, propertyId });
     return { favorited: true };
   }
+
+  async getUserFavorites(userId: string, page: number, limit: number) {
+    const raw = await this.favoriteModel
+      .find({ userId })
+      .populate({
+        path: 'propertyId',
+        match: { status: 'published', deletedAt: null },
+      })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    // populate match filters out non-matching documents by setting propertyId to null
+    const data = raw.filter((fav) => fav.propertyId !== null);
+
+    const total = await this.favoriteModel.countDocuments({ userId });
+
+    return { data, total, page, limit };
+  }
 }

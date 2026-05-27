@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { FavoritesService } from './favorites.service';
 
@@ -6,7 +6,16 @@ import { FavoritesService } from './favorites.service';
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
-  // JWT is required globally — no @Public() here, so only authenticated users can toggle
+  // JWT required globally — authenticated users only
+  @Get()
+  async getMyFavorites(
+    @CurrentUser('id') userId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) {
+    return this.favoritesService.getUserFavorites(userId, page, limit);
+  }
+
   @Post(':propertyId/toggle')
   async toggle(
     @Param('propertyId') propertyId: string,
@@ -15,3 +24,4 @@ export class FavoritesController {
     return this.favoritesService.toggleFavorite(userId, propertyId);
   }
 }
+
