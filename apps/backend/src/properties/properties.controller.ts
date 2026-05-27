@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schemas/user.schema';
 import { CreatePropertyDto } from './dto/create-property.dto';
+import { FilterPropertiesDto } from './dto/filter-properties.dto';
 import { PropertiesService } from './properties.service';
 
 @Controller('properties')
@@ -16,5 +18,14 @@ export class PropertiesController {
     @CurrentUser('id') ownerId: string,
   ) {
     return this.propertiesService.create(dto, ownerId);
+  }
+
+  @Public()
+  @Get()
+  async findAll(
+    @Query() filters: FilterPropertiesDto,
+    @CurrentUser() user?: { role: string },
+  ) {
+    return this.propertiesService.findAll(filters, user?.role);
   }
 }
