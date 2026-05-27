@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { useAuth } from '@/hooks/use-auth';
@@ -60,6 +60,17 @@ export default function FavoriteButton({
     (fav) => fav.propertyId === propertyId
   ) ?? false;
 
+  // Cross-tab sync: listen for storage events from other tabs
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key === 'proplist_favorites_updated') {
+        queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [queryClient]);
+
   const { mutate: toggle } = useMutation<
     ToggleResponse,
     Error,
@@ -101,6 +112,10 @@ export default function FavoriteButton({
       if (context?.previousFavorites) {
         queryClient.setQueryData(['favorites'], context.previousFavorites);
       }
+    },
+    onSuccess: () => {
+      // Trigger the storage event in other tabs
+      window.localStorage.setItem('proplist_favorites_updated', Date.now().toString());
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
