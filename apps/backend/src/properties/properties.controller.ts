@@ -37,4 +37,13 @@ export class PropertiesController {
   ) {
     return this.propertiesService.findOne(id, user);
   }
+
+  @Roles(UserRole.OWNER)
+  @Post(':id/publish')
+  async publish(
+    @Param('id') id: string,
+    @CurrentUser('id') ownerId: string,
+  ) {
+    return this.propertiesService.publish(id, ownerId);
+  }
 }
