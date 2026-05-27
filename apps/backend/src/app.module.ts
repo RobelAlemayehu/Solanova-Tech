@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { PropertiesModule } from './properties/properties.module';
 import { UploadModule } from './upload/upload.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UploadModule } from './upload/upload.module';
     AuthModule,
     PropertiesModule,
     UploadModule,
+    FavoritesModule,
   ],
   controllers: [],
   providers: [
