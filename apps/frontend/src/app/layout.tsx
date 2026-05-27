@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import QueryProvider from '@/providers/query-provider';
+import { AuthProvider } from '@/contexts/auth-context';
 
 export const metadata: Metadata = {
   title: 'PropList',
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );
