@@ -60,20 +60,55 @@ export default function FavoriteButton({
     (fav) => fav.propertyId === propertyId
   ) ?? false;
 
-  const { mutate: toggle, isPending } = useMutation<ToggleResponse>({
+  const { mutate: toggle } = useMutation<
+    ToggleResponse,
+    Error,
+    void,
+    { previousFavorites: FavoritesResponse | undefined }
+  >({
     mutationFn: () =>
       api
         .post<ToggleResponse>(`/favorites/${propertyId}/toggle`)
         .then((r) => r.data),
-    onSuccess: () => {
-      // Refetch favorites to reflect the true server state.
-      // Optimistic update will be added in commit 36.
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+
+      const previousFavorites = queryClient.getQueryData<FavoritesResponse>(['favorites']);
+
+      queryClient.setQueryData<FavoritesResponse>(['favorites'], (old) => {
+        if (!old) return old;
+        const exists = old.data.some((fav) => fav.propertyId === propertyId);
+        
+        if (exists) {
+          return {
+            ...old,
+            data: old.data.filter((fav) => fav.propertyId !== propertyId),
+          };
+        } else {
+          return {
+            ...old,
+            data: [
+              ...old.data,
+              { _id: `temp-${Date.now()}`, userId: user?.id || 'me', propertyId },
+            ],
+          };
+        }
+      });
+
+      return { previousFavorites };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(['favorites'], context.previousFavorites);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     },
   });
 
   // Unauthenticated users see a disabled heart with a tooltip.
-  const isDisabled = !user || isPending || isFavLoading;
+  const isDisabled = !user || isFavLoading;
   const title = !user
     ? 'Sign in to save this property'
     : isFavorited
@@ -113,26 +148,11 @@ export default function FavoriteButton({
         (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
       }}
     >
-      {isPending ? (
-        // Small spinner while mutation is in-flight
-        <span
-          style={{
-            width: size * 0.4,
-            height: size * 0.4,
-            borderRadius: '50%',
-            border: '2px solid rgba(239,68,68,0.3)',
-            borderTopColor: '#ef4444',
-            display: 'inline-block',
-            animation: 'proplist-spin 0.6s linear infinite',
-          }}
-        />
-      ) : (
-        <HeartIcon
-          size={size * 0.48}
-          filled={isFavorited}
-          color={isFavorited ? '#ef4444' : 'rgba(255,255,255,0.55)'}
-        />
-      )}
+      <HeartIcon
+        size={size * 0.48}
+        filled={isFavorited}
+        color={isFavorited ? '#ef4444' : 'rgba(255,255,255,0.55)'}
+      />
     </button>
   );
 }
