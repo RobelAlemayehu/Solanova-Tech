@@ -35,4 +35,8 @@ export class FilterPropertiesDto {
   @IsOptional()
   @IsEnum(PropertyStatus)
   status?: PropertyStatus;
+
+  @IsOptional()
+  @IsString()
+  ownerId?: string;
 }

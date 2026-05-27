@@ -5,6 +5,7 @@ import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schemas/user.schema';
 import { UploadService } from '../upload/upload.service';
+import { UpdatePropertyDto } from './dto/update-property.dto';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { FilterPropertiesDto } from './dto/filter-properties.dto';
 import { PropertiesService } from './properties.service';
@@ -29,8 +30,12 @@ export class PropertiesController {
   @Get()
   async findAll(
     @Query() filters: FilterPropertiesDto,
-    @CurrentUser() user?: { role: string },
+    @CurrentUser() user?: { id: string; role: string },
   ) {
+    // Allow owner dashboard to fetch only their own properties via ?ownerId=me
+    if (filters.ownerId === 'me' && user?.id) {
+      filters.ownerId = user.id;
+    }
     return this.propertiesService.findAll(filters, user?.role);
   }
 
@@ -62,6 +67,16 @@ export class PropertiesController {
   ) {
     const secureUrl = await this.uploadService.uploadImage(file);
     return this.propertiesService.addImages(id, ownerId, [secureUrl]);
+  }
+
+  @Roles(UserRole.OWNER)
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdatePropertyDto,
+    @CurrentUser('id') ownerId: string,
+  ) {
+    return this.propertiesService.update(id, ownerId, dto);
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)

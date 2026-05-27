@@ -1,4 +1,5 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { UpdatePropertyDto } from './dto/update-property.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -28,6 +29,12 @@ export class PropertiesService {
       filter.status = filters.status;
     } else if (requestingUserRole !== 'admin') {
       filter.status = 'published';
+    }
+
+    if (filters.ownerId) {
+      filter.ownerId = filters.ownerId;
+      // When filtering by a specific owner, show all their statuses.
+      delete filter.status;
     }
 
     if (filters.location) {
@@ -193,6 +200,36 @@ export class PropertiesService {
       { $push: { images: { $each: imageUrls } } },
       { new: true },
     );
+
+    return updated;
+  }
+
+  async update(
+    id: string,
+    ownerId: string,
+    dto: UpdatePropertyDto,
+  ): Promise<PropertyDocument> {
+    const property = await this.propertyModel.findOne({ _id: id, deletedAt: null });
+
+    if (!property) {
+      throw new NotFoundException('Property not found');
+    }
+
+    if (property.ownerId?.toString() !== ownerId) {
+      throw new ForbiddenException('You do not have permission to edit this property');
+    }
+
+    if (property.status === 'published') {
+      throw new BadRequestException('Published properties cannot be edited');
+    }
+
+    const updated = await this.propertyModel.findByIdAndUpdate(
+      id,
+      { $set: dto },
+      { new: true },
+    );
+
+    if (!updated) throw new NotFoundException('Property not found');
 
     return updated;
   }
