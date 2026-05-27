@@ -158,4 +158,18 @@ export class PropertiesService {
 
     return { message: 'Property deleted' };
   }
+
+  async disable(id: string) {
+    const updated = await this.propertyModel.findOneAndUpdate(
+      { _id: id, deletedAt: null },
+      { $set: { status: 'archived' } },
+      { new: true },
+    );
+
+    if (!updated) {
+      throw new NotFoundException('Property not found');
+    }
+
+    return updated;
+  }
 }

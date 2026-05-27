@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -54,5 +54,11 @@ export class PropertiesController {
     @CurrentUser() user: any,
   ) {
     return this.propertiesService.remove(id, user);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/disable')
+  async disable(@Param('id') id: string) {
+    return this.propertiesService.disable(id);
   }
 }
