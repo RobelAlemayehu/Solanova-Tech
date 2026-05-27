@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { PropertiesModule } from './properties/properties.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PropertiesModule } from './properties/properties.module';
     }),
     AuthModule,
     PropertiesModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [
