@@ -81,7 +81,7 @@ export class PropertiesService {
         ownerIdString = owner._id?.toString() || owner.id?.toString() || owner.toString();
       }
 
-      const isOwner = requestingUser && ownerIdString === requestingUser.id;
+      const isOwner = requestingUser && (ownerIdString === requestingUser.id || ownerIdString === (requestingUser as any)._id);
       const isAdmin = requestingUser && requestingUser.role === 'admin';
 
       if (!isOwner && !isAdmin) {
