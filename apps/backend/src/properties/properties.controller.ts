@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -45,5 +45,14 @@ export class PropertiesController {
     @CurrentUser('id') ownerId: string,
   ) {
     return this.propertiesService.publish(id, ownerId);
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Delete(':id')
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.propertiesService.remove(id, user);
   }
 }

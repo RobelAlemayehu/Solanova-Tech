@@ -140,4 +140,22 @@ export class PropertiesService {
 
     return updated;
   }
+
+  async remove(id: string, requestingUser: { id: string; role: string }) {
+    const property = await this.propertyModel.findOne({ _id: id, deletedAt: null });
+
+    if (!property) {
+      throw new NotFoundException('Property not found');
+    }
+
+    if (requestingUser.role === 'owner') {
+      if (property.ownerId?.toString() !== requestingUser.id) {
+        throw new ForbiddenException('You do not have permission to delete this property');
+      }
+    }
+
+    await this.propertyModel.findByIdAndUpdate(id, { $set: { deletedAt: new Date() } });
+
+    return { message: 'Property deleted' };
+  }
 }
