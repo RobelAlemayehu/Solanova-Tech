@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -27,5 +27,14 @@ export class PropertiesController {
     @CurrentUser() user?: { role: string },
   ) {
     return this.propertiesService.findAll(filters, user?.role);
+  }
+
+  @Public()
+  @Get(':id')
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser() user?: { id: string; role: string },
+  ) {
+    return this.propertiesService.findOne(id, user);
   }
 }

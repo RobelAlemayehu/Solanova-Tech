@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -62,5 +62,33 @@ export class PropertiesService {
       page: filters.page,
       limit,
     };
+  }
+
+  async findOne(id: string, requestingUser?: { id: string; role: string }) {
+    const property = await this.propertyModel
+      .findOne({ _id: id, deletedAt: null })
+      .populate('ownerId', 'email id')
+      .lean();
+
+    if (!property) {
+      throw new NotFoundException('Property not found');
+    }
+
+    if (property.status === 'draft') {
+      let ownerIdString: string | undefined;
+      if (property.ownerId) {
+        const owner = property.ownerId as any;
+        ownerIdString = owner._id?.toString() || owner.id?.toString() || owner.toString();
+      }
+
+      const isOwner = requestingUser && ownerIdString === requestingUser.id;
+      const isAdmin = requestingUser && requestingUser.role === 'admin';
+
+      if (!isOwner && !isAdmin) {
+        throw new ForbiddenException('You do not have permission to view this draft property');
+      }
+    }
+
+    return property;
   }
 }
