@@ -172,4 +172,28 @@ export class PropertiesService {
 
     return updated;
   }
+
+  async addImages(propertyId: string, ownerId: string, imageUrls: string[]) {
+    const property = await this.propertyModel.findOne({ _id: propertyId, deletedAt: null });
+
+    if (!property) {
+      throw new NotFoundException('Property not found');
+    }
+
+    if (property.ownerId?.toString() !== ownerId) {
+      throw new ForbiddenException('You do not have permission to modify this property');
+    }
+
+    if (property.status === 'published') {
+      throw new BadRequestException('Cannot add images to a published property');
+    }
+
+    const updated = await this.propertyModel.findByIdAndUpdate(
+      propertyId,
+      { $push: { images: { $each: imageUrls } } },
+      { new: true },
+    );
+
+    return updated;
+  }
 }

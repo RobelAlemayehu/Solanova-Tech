@@ -1,15 +1,20 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schemas/user.schema';
+import { UploadService } from '../upload/upload.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { FilterPropertiesDto } from './dto/filter-properties.dto';
 import { PropertiesService } from './properties.service';
 
 @Controller('properties')
 export class PropertiesController {
-  constructor(private readonly propertiesService: PropertiesService) {}
+  constructor(
+    private readonly propertiesService: PropertiesService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Roles(UserRole.OWNER)
   @Post()
@@ -47,6 +52,18 @@ export class PropertiesController {
     return this.propertiesService.publish(id, ownerId);
   }
 
+  @Roles(UserRole.OWNER)
+  @Post(':id/images')
+  @UseInterceptors(FileInterceptor('file'))
+  async addImages(
+    @Param('id') id: string,
+    @CurrentUser('id') ownerId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const secureUrl = await this.uploadService.uploadImage(file);
+    return this.propertiesService.addImages(id, ownerId, [secureUrl]);
+  }
+
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Delete(':id')
   async remove(
@@ -62,3 +79,4 @@ export class PropertiesController {
     return this.propertiesService.disable(id);
   }
 }
+
