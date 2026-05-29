@@ -1,5 +1,19 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UnauthorizedException,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -33,7 +47,10 @@ export class PropertiesController {
     @CurrentUser() user?: { id: string; role: string },
   ) {
     // Allow owner dashboard to fetch only their own properties via ?ownerId=me
-    if (filters.ownerId === 'me' && user?.id) {
+    if (filters.ownerId === 'me') {
+      if (!user?.id) {
+        throw new UnauthorizedException('Authentication required for ownerId=me');
+      }
       filters.ownerId = user.id;
     }
     return this.propertiesService.findAll(filters, user?.role);
@@ -59,7 +76,7 @@ export class PropertiesController {
 
   @Roles(UserRole.OWNER)
   @Post(':id/images')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   async addImages(
     @Param('id') id: string,
     @CurrentUser('id') ownerId: string,

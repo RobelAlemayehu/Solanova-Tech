@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axios from 'axios';
 import api from '@/lib/axios';
+import { getDashboardPath } from '@/lib/auth-redirect';
 import { useAuth } from '@/hooks/use-auth';
 
 const loginSchema = z.object({
@@ -36,8 +37,8 @@ export default function LoginPage() {
     try {
       const response = await api.post<{ access_token: string }>('/auth/login', data);
       localStorage.setItem('proplist_token', response.data.access_token);
-      await refetch();
-      router.push('/properties');
+      const user = await refetch();
+      router.push(user ? getDashboardPath(user.role) : '/properties');
     } catch (err) {
       let message = 'Login failed. Please check your credentials.';
       if (axios.isAxiosError(err)) {

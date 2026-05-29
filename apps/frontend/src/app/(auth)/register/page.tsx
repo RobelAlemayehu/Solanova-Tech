@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axios from 'axios';
 import api from '@/lib/axios';
+import { getDashboardPath } from '@/lib/auth-redirect';
+import { useAuth } from '@/hooks/use-auth';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -18,6 +20,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { refetch } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +40,13 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await api.post('/auth/register', data);
-      router.push('/login');
+      const loginResponse = await api.post<{ access_token: string }>('/auth/login', {
+        email: data.email,
+        password: data.password,
+      });
+      localStorage.setItem('proplist_token', loginResponse.data.access_token);
+      const user = await refetch();
+      router.push(user ? getDashboardPath(user.role) : '/login');
     } catch (err) {
       let message = 'Registration failed. Please try again.';
       if (axios.isAxiosError(err)) {

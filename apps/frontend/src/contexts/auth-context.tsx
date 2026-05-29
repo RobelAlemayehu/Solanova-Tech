@@ -13,7 +13,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  refetch: () => Promise<void>;
+  refetch: () => Promise<User | null>;
   logout: () => void;
 }
 
@@ -23,20 +23,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchMe = useCallback(async () => {
+  const fetchMe = useCallback(async (): Promise<User | null> => {
     setIsLoading(true);
     const token = typeof window !== 'undefined' ? localStorage.getItem('proplist_token') : null;
     if (!token) {
       setUser(null);
       setIsLoading(false);
-      return;
+      return null;
     }
 
     try {
       const response = await api.get<User>('/auth/me');
       setUser(response.data);
-    } catch (err) {
+      return response.data;
+    } catch {
       setUser(null);
+      return null;
     } finally {
       setIsLoading(false);
     }
