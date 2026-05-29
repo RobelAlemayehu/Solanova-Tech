@@ -2,6 +2,7 @@
 
 import React, { useRef, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { PLACEHOLDERS } from '@/lib/placeholders';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -98,7 +99,7 @@ export default function FilterBar() {
           id="filter-location"
           ref={locationRef}
           type="text"
-          placeholder="e.g. New York"
+          placeholder={PLACEHOLDERS.locationFilter}
           defaultValue={currentParams.get('location') ?? ''}
           style={inputStyle}
           onFocus={(e) => {
@@ -122,7 +123,7 @@ export default function FilterBar() {
           ref={minPriceRef}
           type="number"
           min={0}
-          placeholder="e.g. 500"
+          placeholder={PLACEHOLDERS.minPrice}
           defaultValue={currentParams.get('minPrice') ?? ''}
           style={inputStyle}
           onFocus={(e) => {
@@ -146,7 +147,7 @@ export default function FilterBar() {
           ref={maxPriceRef}
           type="number"
           min={0}
-          placeholder="e.g. 5000"
+          placeholder={PLACEHOLDERS.maxPrice}
           defaultValue={currentParams.get('maxPrice') ?? ''}
           style={inputStyle}
           onFocus={(e) => {

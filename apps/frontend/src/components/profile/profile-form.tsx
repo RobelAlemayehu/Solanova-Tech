@@ -9,6 +9,7 @@ import axios from 'axios';
 import api from '@/lib/axios';
 import { useAuth } from '@/hooks/use-auth';
 import type { User } from '@/contexts/auth-context';
+import { PLACEHOLDERS } from '@/lib/placeholders';
 
 const profileSchema = z
   .object({
@@ -114,7 +115,11 @@ export default function ProfileForm() {
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
             Display name
           </label>
-          <input {...register('displayName')} className="proplist-input" />
+          <input
+            {...register('displayName')}
+            className="proplist-input"
+            placeholder={PLACEHOLDERS.displayName}
+          />
           {errors.displayName && (
             <p className="mt-1 text-xs text-red-400">{errors.displayName.message}</p>
           )}

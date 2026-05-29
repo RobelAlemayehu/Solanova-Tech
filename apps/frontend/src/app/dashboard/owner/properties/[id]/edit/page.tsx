@@ -5,52 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import api from '@/lib/axios';
+import { PLACEHOLDERS } from '@/lib/placeholders';
+import {
+  PropertyFormField,
+  propertyInputClass,
+} from '@/components/owner/property-form-field';
 import type { Property } from '@/types/property';
-
-// ─── Shared form field styles ──────────────────────────────────────────────────
-
-const fieldStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '10px 14px',
-  borderRadius: 8,
-  border: '1px solid #d1d5db',
-  fontSize: 14,
-  color: '#111',
-  outline: 'none',
-  background: '#fff',
-  boxSizing: 'border-box',
-  transition: 'border-color 0.15s',
-};
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  marginBottom: 6,
-  fontSize: 13,
-  fontWeight: 600,
-  color: '#374151',
-};
-
-function Field({
-  label,
-  error,
-  disabled,
-  children,
-}: {
-  label: string;
-  error?: string;
-  disabled?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div style={{ marginBottom: 20, opacity: disabled ? 0.7 : 1 }}>
-      <label style={labelStyle}>{label}</label>
-      {children}
-      {error && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#b91c1c' }}>{error}</p>}
-    </div>
-  );
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 interface FormState {
   title: string;
@@ -64,17 +24,27 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
   const queryClient = useQueryClient();
   const propertyId = params.id;
 
-  const [form, setForm] = useState<FormState>({ title: '', description: '', location: '', price: '' });
-  const [msg, setMsg] = useState({ type: '', text: '' });
+  const [form, setForm] = useState<FormState>({
+    title: '',
+    description: '',
+    location: '',
+    price: '',
+  });
+  const [msg, setMsg] = useState<{ type: 'success' | 'error' | ''; text: string }>({
+    type: '',
+    text: '',
+  });
   const [uploading, setUploading] = useState(false);
 
-  // Fetch initial data
-  const { data: property, isLoading: loadingProp, isError: fetchErr } = useQuery<Property>({
+  const {
+    data: property,
+    isLoading: loadingProp,
+    isError: fetchErr,
+  } = useQuery<Property>({
     queryKey: ['property', propertyId],
-    queryFn: () => api.get<Property>(`/properties/${propertyId}`).then(r => r.data),
+    queryFn: () => api.get<Property>(`/properties/${propertyId}`).then((r) => r.data),
   });
 
-  // Populate form on load
   useEffect(() => {
     if (property) {
       setForm({
@@ -86,15 +56,16 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
     }
   }, [property]);
 
-  // Update mutation
   const { mutate: update, isPending: updating } = useMutation<Property>({
     mutationFn: () =>
-      api.patch<Property>(`/properties/${propertyId}`, {
-        title: form.title.trim(),
-        description: form.description.trim(),
-        location: form.location.trim(),
-        price: parseFloat(form.price),
-      }).then(r => r.data),
+      api
+        .patch<Property>(`/properties/${propertyId}`, {
+          title: form.title.trim(),
+          description: form.description.trim(),
+          location: form.location.trim(),
+          price: parseFloat(form.price),
+        })
+        .then((r) => r.data),
     onSuccess: (updatedProperty) => {
       queryClient.setQueryData(['property', propertyId], updatedProperty);
       setMsg({ type: 'success', text: 'Property updated successfully.' });
@@ -109,7 +80,6 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
     },
   });
 
-  // Handle form edit (if draft)
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMsg({ type: '', text: '' });
@@ -120,7 +90,6 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
     update();
   }
 
-  // Handle image upload (single file via FileInterceptor in backend)
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -146,160 +115,148 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
       setMsg({ type: 'error', text: message ?? 'Upload failed.' });
     } finally {
       setUploading(false);
-      // Reset input
       if (e.target) e.target.value = '';
     }
   }
 
-  if (loadingProp) return <div style={{ padding: '3rem', color: '#6b7280' }}>Loading property details…</div>;
-  if (fetchErr || !property) return <div style={{ color: '#b91c1c' }}>Failed to load property.</div>;
+  if (loadingProp) {
+    return <p className="py-12 text-sm text-slate-400">Loading property details…</p>;
+  }
+  if (fetchErr || !property) {
+    return <p className="text-sm text-red-400">Failed to load property.</p>;
+  }
 
   const isPublished = property.status === 'published';
 
   return (
-    <div style={{ maxWidth: 800 }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
+    <div className="max-w-4xl">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#111' }}>
-            Edit Property
-          </h1>
-          <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-            {isPublished 
-              ? 'This property is published. Basic details cannot be edited.' 
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-100">Edit property</h1>
+          <p className="mt-2 text-sm text-slate-400">
+            {isPublished
+              ? 'This property is published. Basic details cannot be edited.'
               : 'Update your listing details or upload images.'}
           </p>
         </div>
         <button
+          type="button"
           onClick={() => router.push('/dashboard/owner/properties')}
-          style={{
-            padding: '8px 16px', borderRadius: 8, border: '1px solid #d1d5db',
-            background: '#fff', color: '#374151', fontWeight: 600, fontSize: 13, cursor: 'pointer',
-          }}
+          className="proplist-btn-ghost text-sm"
         >
-          Back to List
+          Back to list
         </button>
       </div>
 
       {msg.text && (
-        <div style={{
-          marginBottom: 20, padding: '12px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500,
-          background: msg.type === 'error' ? '#fee2e2' : '#dcfce7',
-          color: msg.type === 'error' ? '#b91c1c' : '#15803d',
-        }}>
+        <div
+          className={`mb-6 ${msg.type === 'error' ? 'proplist-alert-error' : 'proplist-alert-success'}`}
+        >
           {msg.text}
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
-        
-        {/* Left Col: Form */}
-        <form
-          onSubmit={handleSubmit}
-          style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', padding: 24 }}
-        >
-          <Field label="Title" disabled={isPublished}>
+      <div className="grid gap-6 lg:grid-cols-[1fr_280px] items-start">
+        <form onSubmit={handleSubmit} className="proplist-card p-6 sm:p-8">
+          <PropertyFormField label="Title" disabled={isPublished}>
             <input
               name="title"
               value={form.title}
-              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               disabled={isPublished}
-              style={fieldStyle}
+              placeholder={PLACEHOLDERS.title}
+              className={propertyInputClass()}
             />
-          </Field>
+          </PropertyFormField>
 
-          <Field label="Description" disabled={isPublished}>
+          <PropertyFormField label="Description" disabled={isPublished}>
             <textarea
               name="description"
               value={form.description}
-              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               disabled={isPublished}
               rows={4}
-              style={{ ...fieldStyle, resize: 'vertical', minHeight: 80 }}
+              placeholder={PLACEHOLDERS.description}
+              className={`${propertyInputClass()} min-h-[80px] resize-y`}
             />
-          </Field>
+          </PropertyFormField>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            <Field label="Location" disabled={isPublished}>
+          <div className="grid gap-0 sm:grid-cols-2 sm:gap-x-4">
+            <PropertyFormField label="Location" disabled={isPublished}>
               <input
                 name="location"
                 value={form.location}
-                onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                 disabled={isPublished}
-                style={fieldStyle}
+                placeholder={PLACEHOLDERS.location}
+                className={propertyInputClass()}
               />
-            </Field>
+            </PropertyFormField>
 
-            <Field label="Price (USD)" disabled={isPublished}>
+            <PropertyFormField label="Price (ETB)" disabled={isPublished}>
               <input
                 name="price"
                 type="number"
                 min="0"
-                step="0.01"
+                step="1"
                 value={form.price}
-                onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 disabled={isPublished}
-                style={fieldStyle}
+                placeholder={PLACEHOLDERS.price}
+                className={propertyInputClass()}
               />
-            </Field>
+            </PropertyFormField>
           </div>
 
           {!isPublished && (
-            <button
-              type="submit"
-              disabled={updating}
-              style={{
-                width: '100%', padding: '11px 0', borderRadius: 8, border: 'none', marginTop: 8,
-                background: updating ? '#a5b4fc' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                color: '#fff', fontWeight: 700, fontSize: 14, cursor: updating ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {updating ? 'Saving…' : 'Save Changes'}
+            <button type="submit" disabled={updating} className="proplist-btn-primary w-full mt-2">
+              {updating ? 'Saving…' : 'Save changes'}
             </button>
           )}
         </form>
 
-        {/* Right Col: Images */}
-        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', padding: 24 }}>
-          <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 700, color: '#111' }}>Gallery</h2>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+        <div className="proplist-card p-6">
+          <h2 className="text-base font-bold text-slate-100 mb-4">Gallery</h2>
+
+          <div className="flex flex-col gap-3 mb-5">
             {property.images.length === 0 ? (
-              <p style={{ margin: 0, fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>
-                No images uploaded yet.
-              </p>
+              <p className="text-sm text-slate-500 italic">No images uploaded yet.</p>
             ) : (
               property.images.map((src, i) => (
-                <div key={i} style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: 8, overflow: 'hidden', background: '#f3f4f6' }}>
-                  <Image src={src} alt={`Image ${i + 1}`} fill style={{ objectFit: 'cover' }} unoptimized={src.startsWith('data:')} />
+                <div
+                  key={i}
+                  className="relative w-full aspect-video rounded-lg overflow-hidden bg-white/5"
+                >
+                  <Image
+                    src={src}
+                    alt={`Image ${i + 1}`}
+                    fill
+                    className="object-cover"
+                    unoptimized={src.startsWith('data:')}
+                  />
                 </div>
               ))
             )}
           </div>
 
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <input
               type="file"
               accept="image/jpeg, image/png, image/webp"
               onChange={handleFileUpload}
               disabled={uploading || isPublished}
-              style={{
-                position: 'absolute', inset: 0, width: '100%', height: '100%',
-                opacity: 0, cursor: (uploading || isPublished) ? 'not-allowed' : 'pointer',
-              }}
-              title={isPublished ? "Cannot add images to a published property" : "Upload an image"}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              title={isPublished ? 'Cannot add images to a published property' : 'Upload an image'}
             />
-            <div style={{
-              padding: '12px', borderRadius: 8, border: '1px dashed #a5b4fc',
-              background: '#eef2ff', color: '#4f46e5', fontSize: 13, fontWeight: 600,
-              textAlign: 'center', pointerEvents: 'none',
-              opacity: (uploading || isPublished) ? 0.6 : 1,
-            }}>
-              {uploading ? 'Uploading…' : isPublished ? 'Gallery locked' : '+ Add Image'}
+            <div
+              className={`py-3 px-4 rounded-lg border border-dashed border-indigo-500/40 bg-indigo-500/10 text-indigo-300 text-sm font-semibold text-center pointer-events-none ${
+                uploading || isPublished ? 'opacity-60' : ''
+              }`}
+            >
+              {uploading ? 'Uploading…' : isPublished ? 'Gallery locked' : '+ Add image'}
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

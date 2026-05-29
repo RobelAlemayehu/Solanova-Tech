@@ -81,7 +81,8 @@ export default function SiteHeader() {
 
   const authLinks = buildAuthLinks();
   const links = user ? authLinks : guestLinks;
-  const userBrowseMinimal = user?.role === 'user' && onBrowseSection;
+  const browseMinimal =
+    onBrowseSection && (user?.role === 'user' || user?.role === 'owner');
 
   const logoHref = getLogoHref(user?.role);
 
@@ -97,12 +98,12 @@ export default function SiteHeader() {
           </span>
         </Link>
 
-        {/* Desktop: user on browse = profile icon only */}
+        {/* Desktop: user/owner on browse = profile icon only */}
         <nav className="hidden md:flex items-center gap-2">
-          {!isLoading && userBrowseMinimal && (
+          {!isLoading && browseMinimal && (
             <ProfileIconButton href={profilePath} active={profileActive} />
           )}
-          {!isLoading && user && !userBrowseMinimal &&
+          {!isLoading && user && !browseMinimal &&
             links.map((item) => (
               <Link key={item.href} href={item.href} className="proplist-btn-ghost !py-2 !px-3 text-sm">
                 {item.label}
@@ -116,12 +117,12 @@ export default function SiteHeader() {
             ))}
         </nav>
 
-        {/* Mobile: user on browse = profile icon; else hamburger */}
+        {/* Mobile: user/owner on browse = profile icon; else hamburger */}
         <div className="flex items-center gap-2 md:hidden">
-          {!isLoading && userBrowseMinimal && (
+          {!isLoading && browseMinimal && (
             <ProfileIconButton href={profilePath} active={profileActive} />
           )}
-          {!userBrowseMinimal && (
+          {!browseMinimal && (
             <button
               type="button"
               className="flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--color-border)] text-slate-200 hover:bg-white/5 transition"
@@ -135,7 +136,7 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      {menuOpen && !userBrowseMinimal && (
+      {menuOpen && !browseMinimal && (
         <>
           <button
             type="button"
