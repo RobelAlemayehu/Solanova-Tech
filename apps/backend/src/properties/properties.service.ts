@@ -25,16 +25,16 @@ export class PropertiesService {
   async findAll(filters: FilterPropertiesDto, requestingUserRole?: string) {
     const filter: any = { deletedAt: null };
 
-    if (filters.status) {
-      filter.status = filters.status;
-    } else if (requestingUserRole !== 'admin') {
-      filter.status = 'published';
-    }
-
     if (filters.ownerId) {
       filter.ownerId = filters.ownerId;
-      // When filtering by a specific owner, show all their statuses.
-      delete filter.status;
+    } else if (filters.status) {
+      if (requestingUserRole === 'admin') {
+        filter.status = filters.status;
+      } else {
+        filter.status = 'published';
+      }
+    } else if (requestingUserRole !== 'admin') {
+      filter.status = 'published';
     }
 
     if (filters.location) {

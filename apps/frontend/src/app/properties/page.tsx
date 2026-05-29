@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import type { Property } from '@/types/property';
 import PropertyCard from '@/components/properties/property-card';
 import FilterBar from '@/components/properties/filter-bar';
+import Pagination from '@/components/properties/pagination';
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -211,6 +212,8 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
             ))
           )}
         </div>
+
+        <Pagination page={page} limit={limit} total={total} searchParams={searchParams} />
       </section>
     </main>
   );

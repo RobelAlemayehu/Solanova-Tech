@@ -10,7 +10,7 @@ Add the following variables:
 
 | Variable   | Initial Value                          | Current Value   |
 |------------|----------------------------------------|-----------------|
-| `baseUrl`  | `http://localhost:5000`                | _(same)_        |
+| `baseUrl`  | `http://localhost:5000/api`            | _(same)_        |
 | `token`    | _(leave empty)_                        | _(leave empty)_ |
 
 > **Tip:** After logging in, copy the `access_token` from the response and paste it into the **Current Value** of `token`. All protected requests will then automatically use `Authorization: Bearer {{token}}`.

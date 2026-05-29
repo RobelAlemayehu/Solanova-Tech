@@ -49,6 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem('proplist_token');
     setUser(null);
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
   }, []);
 
   return (

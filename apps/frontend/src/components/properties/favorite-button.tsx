@@ -100,7 +100,7 @@ export default function FavoriteButton({
             ...old,
             data: [
               ...old.data,
-              { _id: `temp-${Date.now()}`, userId: user?.id || 'me', propertyId },
+              { _id: `temp-${Date.now()}`, userId: user?._id || 'me', propertyId },
             ],
           };
         }

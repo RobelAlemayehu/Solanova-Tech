@@ -9,13 +9,16 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { PropertiesModule } from './properties/properties.module';
 import { UploadModule } from './upload/upload.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { AdminModule } from './admin/admin.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: envValidationSchema,
-      envFilePath: '../../.env',
+      envFilePath: ['../../.env', '.env'],
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
@@ -27,8 +30,9 @@ import { FavoritesModule } from './favorites/favorites.module';
     PropertiesModule,
     UploadModule,
     FavoritesModule,
+    AdminModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,

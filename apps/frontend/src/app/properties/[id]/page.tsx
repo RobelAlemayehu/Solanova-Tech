@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { Property, PropertyStatus } from '@/types/property';
 import FavoriteButton from '@/components/properties/favorite-button';
+import ContactOwnerButton from '@/components/properties/contact-owner-button';
 
 // ─── Extended type: ownerId is populated by the backend ──────────────────────
 
@@ -381,6 +382,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>
               {ownerId.email}
             </p>
+            {status === 'published' && (
+              <ContactOwnerButton ownerEmail={ownerId.email} propertyTitle={title} />
+            )}
           </div>
         </section>
 

@@ -52,42 +52,51 @@ export default function RegisterPage() {
   return (
     <div>
       <div className="text-center">
-        <h2 className="text-3xl font-extrabold text-gray-900">Create an account</h2>
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-100">Create an account</h2>
+        <p className="mt-2 text-sm text-slate-400">
+          Choose a role to start browsing or listing properties.
+        </p>
       </div>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded text-sm font-medium border border-red-200">
+          <div className="proplist-alert-error">
             {error}
           </div>
         )}
-        <div className="rounded-md shadow-sm space-y-4">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email address</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Email address
+            </label>
             <input
               {...register('email')}
               type="email"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+              className="proplist-input mt-2"
             />
             {errors.email && (
               <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Password
+            </label>
             <input
               {...register('password')}
               type="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+              className="proplist-input mt-2"
             />
             {errors.password && (
               <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Role</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Role
+            </label>
             <select
               {...register('role')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black bg-white"
+              className="proplist-input mt-2"
             >
               <option value="user">User (looking for properties)</option>
               <option value="owner">Owner (listing properties)</option>
@@ -102,17 +111,17 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="proplist-btn-primary w-full"
           >
             {loading ? 'Registering...' : 'Register'}
           </button>
         </div>
       </form>
       <div className="mt-4 text-center">
-        <span className="text-sm text-gray-600">Already have an account? </span>
+        <span className="text-sm text-slate-400">Already have an account? </span>
         <button
           onClick={() => router.push('/login')}
-          className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+          className="text-sm font-semibold text-indigo-300 hover:text-indigo-200"
         >
           Sign in
         </button>

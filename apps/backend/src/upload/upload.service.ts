@@ -27,6 +27,15 @@ export class UploadService {
   }
 
   async uploadImage(file: Express.Multer.File): Promise<string> {
+    if (!file) {
+      throw new BadRequestException('No file provided');
+    }
+
+    const cloudinaryUrl = this.configService.get<string>('CLOUDINARY_URL');
+    if (!cloudinaryUrl) {
+      throw new BadRequestException('Image upload is not configured (CLOUDINARY_URL missing)');
+    }
+
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       throw new BadRequestException(
         `Invalid file type "${file.mimetype}". Allowed types: jpeg, png, webp.`,

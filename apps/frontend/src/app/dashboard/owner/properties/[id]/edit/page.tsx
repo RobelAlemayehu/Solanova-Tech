@@ -99,8 +99,13 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
       queryClient.setQueryData(['property', propertyId], updatedProperty);
       setMsg({ type: 'success', text: 'Property updated successfully.' });
     },
-    onError: (err: any) => {
-      setMsg({ type: 'error', text: err?.response?.data?.message ?? 'Failed to update.' });
+    onError: (err: unknown) => {
+      const message =
+        typeof err === 'object' && err !== null && 'response' in err
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((err as any).response?.data?.message as string | undefined)
+          : undefined;
+      setMsg({ type: 'error', text: message ?? 'Failed to update.' });
     },
   });
 
@@ -132,8 +137,13 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
       });
       queryClient.setQueryData(['property', propertyId], res.data);
       setMsg({ type: 'success', text: 'Image uploaded successfully.' });
-    } catch (err: any) {
-      setMsg({ type: 'error', text: err?.response?.data?.message ?? 'Upload failed.' });
+    } catch (err: unknown) {
+      const message =
+        typeof err === 'object' && err !== null && 'response' in err
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((err as any).response?.data?.message as string | undefined)
+          : undefined;
+      setMsg({ type: 'error', text: message ?? 'Upload failed.' });
     } finally {
       setUploading(false);
       // Reset input

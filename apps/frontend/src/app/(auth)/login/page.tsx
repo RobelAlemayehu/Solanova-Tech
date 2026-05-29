@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axios from 'axios';
 import api from '@/lib/axios';
+import { useAuth } from '@/hooks/use-auth';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -17,6 +18,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { refetch } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +36,8 @@ export default function LoginPage() {
     try {
       const response = await api.post<{ access_token: string }>('/auth/login', data);
       localStorage.setItem('proplist_token', response.data.access_token);
-      router.push('/');
+      await refetch();
+      router.push('/properties');
     } catch (err) {
       let message = 'Login failed. Please check your credentials.';
       if (axios.isAxiosError(err)) {
@@ -49,32 +52,37 @@ export default function LoginPage() {
   return (
     <div>
       <div className="text-center">
-        <h2 className="text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-100">Welcome back</h2>
+        <p className="mt-2 text-sm text-slate-400">Sign in to manage properties and favorites.</p>
       </div>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
         {error && (
-          <div className="bg-red-50 text-red-500 p-3 rounded text-sm font-medium border border-red-200">
+          <div className="proplist-alert-error">
             {error}
           </div>
         )}
-        <div className="rounded-md shadow-sm space-y-4">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email address</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Email address
+            </label>
             <input
               {...register('email')}
               type="email"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+              className="proplist-input mt-2"
             />
             {errors.email && (
               <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Password
+            </label>
             <input
               {...register('password')}
               type="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
+              className="proplist-input mt-2"
             />
             {errors.password && (
               <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
@@ -86,17 +94,17 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="proplist-btn-primary w-full"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </div>
       </form>
       <div className="mt-4 text-center">
-        <span className="text-sm text-gray-600">Don't have an account? </span>
+        <span className="text-sm text-slate-400">Don't have an account? </span>
         <button
           onClick={() => router.push('/register')}
-          className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+          className="text-sm font-semibold text-indigo-300 hover:text-indigo-200"
         >
           Register
         </button>

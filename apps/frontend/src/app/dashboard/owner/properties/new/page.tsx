@@ -94,8 +94,13 @@ export default function NewPropertyPage() {
       // Redirect to edit page where images can be uploaded
       router.push(`/dashboard/owner/properties/${property._id}/edit`);
     },
-    onError: (err: any) => {
-      setServerError(err?.response?.data?.message ?? 'Something went wrong. Please try again.');
+    onError: (err: unknown) => {
+      const message =
+        typeof err === 'object' && err !== null && 'response' in err
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((err as any).response?.data?.message as string | undefined)
+          : undefined;
+      setServerError(message ?? 'Something went wrong. Please try again.');
     },
   });
 

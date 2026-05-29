@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import type { Property, PropertyStatus } from '@/types/property';
@@ -40,7 +39,6 @@ function StatusBadge({ status }: { status: PropertyStatus }) {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function OwnerPropertiesPage() {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery<PropertiesResponse>({
