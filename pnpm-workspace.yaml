@@ -2,5 +2,5 @@ packages:
   - 'apps/*'
 allowBuilds:
   '@nestjs/core': true
+  '@scarf/scarf': set this to true or false
   bcrypt: true
-
