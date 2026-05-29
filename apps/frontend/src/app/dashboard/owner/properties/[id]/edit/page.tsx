@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import api from '@/lib/axios';
@@ -19,10 +19,11 @@ interface FormState {
   price: string;
 }
 
-export default function EditPropertyPage({ params }: { params: { id: string } }) {
+export default function EditPropertyPage() {
   const router = useRouter();
+  const params = useParams();
   const queryClient = useQueryClient();
-  const propertyId = params.id;
+  const propertyId = typeof params.id === 'string' ? params.id : '';
 
   const [form, setForm] = useState<FormState>({
     title: '',
@@ -117,6 +118,10 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
       setUploading(false);
       if (e.target) e.target.value = '';
     }
+  }
+
+  if (!propertyId) {
+    return <p className="text-sm text-red-400">Invalid property ID.</p>;
   }
 
   if (loadingProp) {

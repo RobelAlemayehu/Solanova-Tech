@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import type { Property, PropertyStatus } from '@/types/property';
 import FavoriteButton from '@/components/properties/favorite-button';
 import ContactOwnerButton from '@/components/properties/contact-owner-button';
+import { formatPriceETB } from '@/lib/format-price';
 
 // ─── Extended type: ownerId is populated by the backend ──────────────────────
 
@@ -85,14 +86,6 @@ function StatusBadge({ status }: { status: PropertyStatus }) {
       {cfg.label}
     </span>
   );
-}
-
-function formatPrice(price: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(price);
 }
 
 // ─── Image Gallery (horizontal scroll) ───────────────────────────────────────
@@ -273,7 +266,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   letterSpacing: '-0.03em',
                 }}
               >
-                {formatPrice(price)}
+                {formatPriceETB(price)}
               </p>
               <span style={{ fontSize: '0.75rem', color: 'var(--color-muted, #94a3b8)' }}>
                 per month

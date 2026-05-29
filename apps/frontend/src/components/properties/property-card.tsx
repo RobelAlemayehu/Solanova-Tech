@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { formatPriceETB } from '@/lib/format-price';
 import type { Property, PropertyStatus } from '@/types/property';
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
@@ -46,16 +47,6 @@ function StatusBadge({ status }: { status: PropertyStatus }) {
       {cfg.label}
     </span>
   );
-}
-
-// ─── Price Formatter ──────────────────────────────────────────────────────────
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(price);
 }
 
 // ─── Placeholder Image ────────────────────────────────────────────────────────
@@ -169,7 +160,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               letterSpacing: '-0.02em',
             }}
           >
-            {formatPrice(price)}
+            {formatPriceETB(price)}
             <span
               style={{
                 fontSize: '0.75rem',
