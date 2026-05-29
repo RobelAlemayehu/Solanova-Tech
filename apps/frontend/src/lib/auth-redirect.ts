@@ -21,3 +21,20 @@ export function getProfilePath(role: User['role']): string {
       return '/dashboard/user/profile';
   }
 }
+
+/** Where to send users immediately after login or register. */
+export function getPostLoginPath(role: User['role']): string {
+  if (role === 'user') {
+    return '/properties';
+  }
+  return getDashboardPath(role);
+}
+
+/** Logo target on public / browse pages. */
+export function getLogoHref(role: User['role'] | undefined): string {
+  if (!role) return '/';
+  if (role === 'user' || role === 'owner') {
+    return '/properties';
+  }
+  return getDashboardPath(role);
+}

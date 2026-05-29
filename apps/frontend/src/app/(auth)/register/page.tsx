@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axios from 'axios';
 import api from '@/lib/axios';
-import { getDashboardPath } from '@/lib/auth-redirect';
+import { getPostLoginPath } from '@/lib/auth-redirect';
 import { useAuth } from '@/hooks/use-auth';
 
 const registerSchema = z.object({
@@ -46,7 +46,7 @@ export default function RegisterPage() {
       });
       localStorage.setItem('proplist_token', loginResponse.data.access_token);
       const user = await refetch();
-      router.push(user ? getDashboardPath(user.role) : '/login');
+      router.push(user ? getPostLoginPath(user.role) : '/login');
     } catch (err) {
       let message = 'Registration failed. Please try again.';
       if (axios.isAxiosError(err)) {

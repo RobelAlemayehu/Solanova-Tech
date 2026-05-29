@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { getDashboardPath } from '@/lib/auth-redirect';
+import { getPostLoginPath } from '@/lib/auth-redirect';
 
 export default function HomePage() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace(getDashboardPath(user.role));
+      router.replace(getPostLoginPath(user.role));
     }
   }, [user, isLoading, router]);
 

@@ -20,7 +20,7 @@ export default function Sidebar() {
       <div className="p-6">
         <div className="mb-8">
           <Link
-            href={user.role === 'owner' ? '/dashboard/owner' : user.role === 'admin' ? '/dashboard/admin' : '/dashboard/user'}
+            href={user.role === 'user' ? '/properties' : user.role === 'owner' ? '/dashboard/owner' : '/dashboard/admin'}
             className="inline-flex items-center gap-2 text-lg font-black tracking-tight"
           >
             <span className="bg-gradient-to-r from-teal-400 via-cyan-500 to-indigo-400 bg-clip-text text-transparent">
@@ -30,7 +30,6 @@ export default function Sidebar() {
           <p className="mt-2 text-sm font-medium text-slate-200 truncate">
             {user.displayName || 'Your account'}
           </p>
-          <p className="text-xs text-slate-400 truncate">{user.email}</p>
           <span className="inline-flex mt-3 items-center gap-2 rounded-full border border-[rgba(99,102,241,0.25)] bg-[rgba(99,102,241,0.08)] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-200">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-300" aria-hidden="true" />
             {user.role}
@@ -38,14 +37,10 @@ export default function Sidebar() {
         </div>
 
         <nav className="space-y-1">
-          <Link href="/properties" className={navLink}>
-            Browse Properties
-          </Link>
-
           {user.role === 'user' && (
             <>
-              <Link href="/dashboard/user" className={navLink}>
-                Dashboard
+              <Link href="/properties" className={navLink}>
+                Browse listings
               </Link>
               <Link href="/dashboard/user/favorites" className={navLink}>
                 My Favorites
@@ -57,6 +52,9 @@ export default function Sidebar() {
             <>
               <Link href="/dashboard/owner" className={navLink}>
                 Dashboard
+              </Link>
+              <Link href="/properties" className={navLink}>
+                Browse listings
               </Link>
               <Link href="/dashboard/owner/properties" className={navLink}>
                 My Properties
