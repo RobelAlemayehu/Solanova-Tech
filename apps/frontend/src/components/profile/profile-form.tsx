@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useForm } from 'react-hook-form';
+import PasswordInput from '@/components/ui/password-input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axios from 'axios';
@@ -103,12 +103,6 @@ export default function ProfileForm() {
         Update your display name, email, or password.
       </p>
 
-      {user.role === 'user' && (
-        <Link href="/dashboard/user/favorites" className="proplist-btn-ghost mt-4 inline-flex text-sm">
-          My favorites
-        </Link>
-      )}
-
       {message && (
         <div className={`mt-6 ${message.type === 'success' ? 'proplist-alert-success' : 'proplist-alert-error'}`}>
           {message.text}
@@ -141,21 +135,21 @@ export default function ProfileForm() {
           <div className="space-y-4">
             <div>
               <label className="block text-xs text-slate-500 mb-2">Current password</label>
-              <input {...register('currentPassword')} type="password" className="proplist-input" />
+              <PasswordInput {...register('currentPassword')} autoComplete="current-password" />
               {errors.currentPassword && (
                 <p className="mt-1 text-xs text-red-400">{errors.currentPassword.message}</p>
               )}
             </div>
             <div>
               <label className="block text-xs text-slate-500 mb-2">New password</label>
-              <input {...register('newPassword')} type="password" className="proplist-input" />
+              <PasswordInput {...register('newPassword')} autoComplete="new-password" />
               {errors.newPassword && (
                 <p className="mt-1 text-xs text-red-400">{errors.newPassword.message}</p>
               )}
             </div>
             <div>
               <label className="block text-xs text-slate-500 mb-2">Confirm new password</label>
-              <input {...register('confirmPassword')} type="password" className="proplist-input" />
+              <PasswordInput {...register('confirmPassword')} autoComplete="new-password" />
               {errors.confirmPassword && (
                 <p className="mt-1 text-xs text-red-400">{errors.confirmPassword.message}</p>
               )}

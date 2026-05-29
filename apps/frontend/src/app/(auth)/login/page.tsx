@@ -9,6 +9,7 @@ import axios from 'axios';
 import api from '@/lib/axios';
 import { getPostLoginPath } from '@/lib/auth-redirect';
 import { useAuth } from '@/hooks/use-auth';
+import PasswordInput from '@/components/ui/password-input';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -80,10 +81,10 @@ export default function LoginPage() {
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
               Password
             </label>
-            <input
+            <PasswordInput
               {...register('password')}
-              type="password"
-              className="proplist-input mt-2"
+              autoComplete="current-password"
+              className="mt-2"
             />
             {errors.password && (
               <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { getDashboardPath, getLogoHref, getProfilePath } from '@/lib/auth-redirect';
+import ProfileIconButton from '@/components/ui/profile-icon-button';
 
 function MenuIcon({ open }: { open: boolean }) {
   return (
@@ -24,10 +25,12 @@ function MenuIcon({ open }: { open: boolean }) {
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const onBrowseSection = pathname === '/properties' || pathname.startsWith('/properties/');
+  const profilePath = user ? getProfilePath(user.role) : '/login';
+  const profileActive = pathname.startsWith('/dashboard') && pathname.includes('/profile');
 
   useEffect(() => {
     setMenuOpen(false);
@@ -58,16 +61,14 @@ export default function SiteHeader() {
       links.push({ href: '/properties', label: 'Browse listings' });
     }
 
-    if (user.role === 'user') {
-      links.push({ href: '/dashboard/user/favorites', label: 'My favorites' });
-    } else if (user.role === 'owner') {
+    if (user.role === 'owner') {
       links.push({ href: getDashboardPath(user.role), label: 'Dashboard' });
       links.push({ href: '/dashboard/owner/properties', label: 'My properties' });
-    } else {
+      links.push({ href: profilePath, label: 'Profile' });
+    } else if (user.role === 'admin') {
       links.push({ href: getDashboardPath(user.role), label: 'Dashboard' });
+      links.push({ href: profilePath, label: 'Profile' });
     }
-
-    links.push({ href: getProfilePath(user.role), label: 'Profile' });
 
     return links;
   };
@@ -80,6 +81,7 @@ export default function SiteHeader() {
 
   const authLinks = buildAuthLinks();
   const links = user ? authLinks : guestLinks;
+  const userBrowseMinimal = user?.role === 'user' && onBrowseSection;
 
   const logoHref = getLogoHref(user?.role);
 
@@ -95,37 +97,45 @@ export default function SiteHeader() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop: user on browse = profile icon only */}
         <nav className="hidden md:flex items-center gap-2">
-          {!isLoading &&
+          {!isLoading && userBrowseMinimal && (
+            <ProfileIconButton href={profilePath} active={profileActive} />
+          )}
+          {!isLoading && user && !userBrowseMinimal &&
             links.map((item) => (
               <Link key={item.href} href={item.href} className="proplist-btn-ghost !py-2 !px-3 text-sm">
                 {item.label}
               </Link>
             ))}
-          {!isLoading && user && (
-            <button
-              type="button"
-              onClick={logout}
-              className="proplist-btn-ghost !py-2 !px-3 text-sm text-red-200 border-[rgba(239,68,68,0.25)]"
-            >
-              Log out
-            </button>
-          )}
+          {!isLoading && !user &&
+            guestLinks.map((item) => (
+              <Link key={item.href} href={item.href} className="proplist-btn-ghost !py-2 !px-3 text-sm">
+                {item.label}
+              </Link>
+            ))}
         </nav>
 
-        <button
-          type="button"
-          className="md:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--color-border)] text-slate-200 hover:bg-white/5 transition"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          <MenuIcon open={menuOpen} />
-        </button>
+        {/* Mobile: user on browse = profile icon; else hamburger */}
+        <div className="flex items-center gap-2 md:hidden">
+          {!isLoading && userBrowseMinimal && (
+            <ProfileIconButton href={profilePath} active={profileActive} />
+          )}
+          {!userBrowseMinimal && (
+            <button
+              type="button"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--color-border)] text-slate-200 hover:bg-white/5 transition"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <MenuIcon open={menuOpen} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {menuOpen && (
+      {menuOpen && !userBrowseMinimal && (
         <>
           <button
             type="button"
@@ -158,15 +168,7 @@ export default function SiteHeader() {
                   ))}
                 </div>
 
-                {user ? (
-                  <button
-                    type="button"
-                    onClick={logout}
-                    className="mt-4 w-full proplist-btn-ghost text-red-200 border-[rgba(239,68,68,0.25)]"
-                  >
-                    Log out
-                  </button>
-                ) : (
+                {!user && (
                   <Link href="/register" className="mt-4 block proplist-btn-primary w-full text-center">
                     Get started
                   </Link>
