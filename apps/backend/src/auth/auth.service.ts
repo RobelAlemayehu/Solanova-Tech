@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument, UserRole } from '../users/schemas/user.schema';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -81,6 +82,50 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = user.toObject();
+    return safeUser;
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.userModel.findOne({
+      _id: userId,
+      deletedAt: null,
+      isActive: true,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (dto.displayName !== undefined) {
+      user.displayName = dto.displayName.trim();
+    }
+
+    if (dto.email && dto.email.toLowerCase() !== user.email) {
+      const taken = await this.userModel.findOne({
+        email: dto.email.toLowerCase(),
+        _id: { $ne: userId },
+      });
+      if (taken) {
+        throw new ConflictException('Email is already in use');
+      }
+      user.email = dto.email.toLowerCase();
+    }
+
+    if (dto.newPassword) {
+      if (!dto.currentPassword) {
+        throw new BadRequestException('Current password is required to set a new password');
+      }
+      const valid = await bcrypt.compare(dto.currentPassword, user.password);
+      if (!valid) {
+        throw new UnauthorizedException('Current password is incorrect');
+      }
+      user.password = await bcrypt.hash(dto.newPassword, 10);
+    }
+
+    await user.save();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...safeUser } = user.toObject();

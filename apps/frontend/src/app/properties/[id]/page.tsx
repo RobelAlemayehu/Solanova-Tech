@@ -189,14 +189,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   } = property;
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background: 'var(--color-background, #0f0f1a)',
-        color: 'var(--color-text, #e2e8f0)',
-        fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <main className="text-slate-200 pb-8">
       <div style={{ maxWidth: '56rem', margin: '0 auto', padding: '2rem 1.5rem 4rem' }}>
 
         {/* ── Back link ── */}

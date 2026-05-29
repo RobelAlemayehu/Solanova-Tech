@@ -130,15 +130,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   const { data: properties, total, page, limit } = await fetchProperties(searchParams);
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background: 'var(--color-background, #0f0f1a)',
-        color: 'var(--color-text, #e2e8f0)',
-        fontFamily:
-          "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <main className="text-slate-200">
       {/* ── Hero Header ── */}
       <header
         style={{

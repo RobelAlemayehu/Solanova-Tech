@@ -10,3 +10,14 @@ export function getDashboardPath(role: User['role']): string {
       return '/dashboard/user';
   }
 }
+
+export function getProfilePath(role: User['role']): string {
+  switch (role) {
+    case 'admin':
+      return '/dashboard/admin/profile';
+    case 'owner':
+      return '/dashboard/owner/profile';
+    default:
+      return '/dashboard/user/profile';
+  }
+}
