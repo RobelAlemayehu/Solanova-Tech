@@ -2,16 +2,24 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { getProfilePath } from '@/lib/auth-redirect';
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
+  const pathname = usePathname();
 
   if (!user) return null;
 
-  const navLink =
-    'block rounded-lg px-3 py-2 text-sm font-semibold text-slate-200/90 hover:bg-white/5 hover:text-white transition';
+  const navLink = (href: string) => {
+    const active = pathname === href || pathname.startsWith(href + '/');
+    return `block rounded-lg px-3 py-2 text-sm font-semibold transition ${
+      active
+        ? 'bg-indigo-500/15 text-indigo-200'
+        : 'text-slate-200/90 hover:bg-white/5 hover:text-white'
+    }`;
+  };
 
   const profilePath = getProfilePath(user.role);
 
@@ -19,10 +27,7 @@ export default function Sidebar() {
     <aside className="w-72 min-h-screen flex flex-col justify-between border-r border-[color:var(--color-border)] bg-[rgba(10,16,34,0.65)] backdrop-blur-xl">
       <div className="p-6">
         <div className="mb-8">
-          <Link
-            href={user.role === 'user' ? '/properties' : user.role === 'owner' ? '/dashboard/owner' : '/dashboard/admin'}
-            className="inline-flex items-center gap-2 text-lg font-black tracking-tight"
-          >
+          <Link href="/properties" className="inline-flex items-center gap-2 text-lg font-black tracking-tight">
             <span className="bg-gradient-to-r from-teal-400 via-cyan-500 to-indigo-400 bg-clip-text text-transparent">
               PropList
             </span>
@@ -39,41 +44,48 @@ export default function Sidebar() {
         <nav className="space-y-1">
           {user.role === 'user' && (
             <>
-              <Link href="/properties" className={navLink}>
+              <Link href="/properties" className={navLink('/properties')}>
                 Browse listings
               </Link>
-              <Link href="/dashboard/user/favorites" className={navLink}>
+              <Link href="/dashboard/user/favorites" className={navLink('/dashboard/user/favorites')}>
                 My Favorites
+              </Link>
+              <Link href={profilePath} className={navLink(profilePath)}>
+                Profile
               </Link>
             </>
           )}
 
           {user.role === 'owner' && (
             <>
-              <Link href="/dashboard/owner" className={navLink}>
+              <Link href="/dashboard/owner" className={navLink('/dashboard/owner')}>
                 Dashboard
               </Link>
-              <Link href="/properties" className={navLink}>
+              <Link href="/properties" className={navLink('/properties')}>
                 Browse listings
               </Link>
-              <Link href="/dashboard/owner/properties" className={navLink}>
+              <Link href="/dashboard/owner/properties" className={navLink('/dashboard/owner/properties')}>
                 My Properties
               </Link>
-              <Link href="/dashboard/owner/properties/new" className={navLink}>
+              <Link href="/dashboard/owner/properties/new" className={navLink('/dashboard/owner/properties/new')}>
                 New Property
+              </Link>
+              <Link href={profilePath} className={navLink(profilePath)}>
+                Profile
               </Link>
             </>
           )}
 
           {user.role === 'admin' && (
-            <Link href="/dashboard/admin" className={navLink}>
-              Admin Dashboard
-            </Link>
+            <>
+              <Link href="/dashboard/admin" className={navLink('/dashboard/admin')}>
+                Admin Dashboard
+              </Link>
+              <Link href={profilePath} className={navLink(profilePath)}>
+                Profile
+              </Link>
+            </>
           )}
-
-          <Link href={profilePath} className={navLink}>
-            Profile settings
-          </Link>
         </nav>
       </div>
 

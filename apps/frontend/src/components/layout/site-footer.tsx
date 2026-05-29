@@ -53,18 +53,11 @@ export default function SiteFooter() {
               {!isLoading && user && (
                 <>
                   {user.role === 'user' && (
-                    <>
-                      <li>
-                        <Link href="/dashboard/user/favorites" className="text-slate-300 hover:text-white transition">
-                          My favorites
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/dashboard/user" className="text-slate-300 hover:text-white transition">
-                          Dashboard
-                        </Link>
-                      </li>
-                    </>
+                    <li>
+                      <Link href="/dashboard/user/favorites" className="text-slate-300 hover:text-white transition">
+                        My favorites
+                      </Link>
+                    </li>
                   )}
                   {user.role === 'owner' && (
                     <>

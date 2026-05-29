@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import FavoriteButton from '@/components/properties/favorite-button';
+import { formatPriceETB } from '@/lib/format-price';
 
 type PropertyStatus = 'draft' | 'published' | 'archived';
 
@@ -88,7 +89,7 @@ export default function UserFavoritesPage() {
                   </Link>
                   <p className="mt-1 text-sm text-slate-400 truncate">{p.location}</p>
                   <p className="mt-3 text-lg font-extrabold text-indigo-300">
-                    ${p.price.toLocaleString()}
+                    {formatPriceETB(p.price)}
                     <span className="ml-1 text-xs font-medium text-slate-400">/ mo</span>
                   </p>
                 </div>

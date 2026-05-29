@@ -60,7 +60,6 @@ export default function SiteHeader() {
 
     if (user.role === 'user') {
       links.push({ href: '/dashboard/user/favorites', label: 'My favorites' });
-      links.push({ href: '/dashboard/user', label: 'Dashboard' });
     } else if (user.role === 'owner') {
       links.push({ href: getDashboardPath(user.role), label: 'Dashboard' });
       links.push({ href: '/dashboard/owner/properties', label: 'My properties' });

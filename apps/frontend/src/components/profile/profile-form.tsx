@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -101,6 +102,12 @@ export default function ProfileForm() {
       <p className="mt-2 text-sm text-slate-400">
         Update your display name, email, or password.
       </p>
+
+      {user.role === 'user' && (
+        <Link href="/dashboard/user/favorites" className="proplist-btn-ghost mt-4 inline-flex text-sm">
+          My favorites
+        </Link>
+      )}
 
       {message && (
         <div className={`mt-6 ${message.type === 'success' ? 'proplist-alert-success' : 'proplist-alert-error'}`}>

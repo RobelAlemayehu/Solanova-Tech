@@ -11,6 +11,14 @@ export function getDashboardPath(role: User['role']): string {
   }
 }
 
+/** Account home for role (profile page for users). */
+export function getAccountPath(role: User['role']): string {
+  if (role === 'user') {
+    return '/dashboard/user/profile';
+  }
+  return getProfilePath(role);
+}
+
 export function getProfilePath(role: User['role']): string {
   switch (role) {
     case 'admin':
