@@ -22,7 +22,7 @@ interface PropertyDetail extends Omit<Property, 'ownerId'> {
 // ─── SSR Fetch ────────────────────────────────────────────────────────────────
 
 async function fetchProperty(id: string): Promise<PropertyDetail | null> {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'https://solanova-tech-10.onrender.com/api';
 
   const res = await fetch(`${apiBase}/properties/${id}`, {
     cache: 'no-store',

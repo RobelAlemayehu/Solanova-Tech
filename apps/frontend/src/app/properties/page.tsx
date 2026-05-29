@@ -25,7 +25,7 @@ interface FetchResult {
 async function fetchProperties(
   searchParams: Record<string, string | string[] | undefined>
 ): Promise<FetchResult> {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'https://solanova-tech-10.onrender.com/api';
 
   // Build query string — only append defined, non-empty values.
   const params = new URLSearchParams();
