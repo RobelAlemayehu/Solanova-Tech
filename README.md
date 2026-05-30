@@ -24,46 +24,10 @@ A full-stack property listing platform built for the Intern Staff Developer prac
 | Images | **Cloudinary** |
 | Styling | Tailwind CSS |
 
----
-
-## Technical Decisions
-
-### Why NestJS?
-
-NestJS provides a structured, modular architecture out of the box — controllers, services, guards, and DTO validation map directly to the exam's RBAC and API requirements. Compared to raw Express, NestJS reduces boilerplate for JWT auth, global validation pipes, and dependency injection. The decorator-based `@Roles()` / `@Public()` pattern makes access control explicit and auditable.
-
-### Why TanStack Query (not Redux/Zustand)?
-
-This app is **server-state heavy** (properties, favorites, admin metrics) with minimal client-only global state (auth session). TanStack Query handles caching, background refetch, optimistic updates, and cross-tab cache invalidation natively — which is exactly what favorites need. Auth uses a lightweight React Context since it's a single user object. Redux would add ceremony without benefit; Zustand would duplicate what Query already solves for API data.
-
-### How is access control enforced?
-
-**Backend (source of truth):**
-- Global `JwtAuthGuard` — all routes require JWT unless marked `@Public()`
-- Global `RolesGuard` — routes with `@Roles('owner')` etc. check `request.user.role`
-- Service-layer checks — e.g. draft properties hidden from non-owners, published properties cannot be edited, status filters restricted to admins
-
-**Frontend (UX layer):**
-- `ProtectedRoute` wraps dashboard layouts — redirects unauthenticated users to `/login`
-- Role mismatch shows a toast and redirects home
-- Public SSR pages (`/properties`) remain accessible; write actions always go through the API where guards enforce permissions
-
-### Hardest technical challenge
-
-**Publish workflow with concurrency safety.** Publishing requires validating all fields + at least one image, then atomically transitioning `draft → published`. MongoDB transactions need a replica set, which many free-tier databases don't provide. The solution uses `findOneAndUpdate({ status: 'draft' })` as an optimistic lock — if two requests race, one gets a `409 Conflict`. This trades multi-document rollback for practical deployability on standalone MongoDB.
-
-### What would break first at scale?
-
-1. **Unindexed property queries** — location regex search and price-range filters on a growing collection would slow down without compound indexes on `(status, deletedAt, location, price)`.
-2. **Cloudinary upload throughput** — synchronous image uploads block the request; high traffic would need a queue (S3 pre-signed URLs + background processing).
-3. **Admin property listing** — currently paginated but metrics are live counts; at millions of documents, aggregation pipelines would need caching or materialized views.
-
----
 
 ## Features Checklist
 
 ### User Roles
-- **Admin** — view all properties, disable (archive) any property, system metrics
 - **Owner** — create/edit drafts, upload images, publish, soft-delete own properties
 - **User** — browse published properties, save favorites, contact owners via email
 
@@ -161,7 +125,8 @@ All API routes are prefixed with `/api`.
 
 A `railway.toml` is also included at the repo root for Railway deployments.
 
-### Frontend (Vercel)
+### Frontend (Vercel)- **Admin** — view all properties, disable (archive) any property, system metrics
+
 
 **Live:** [https://solanovatech.vercel.app](https://solanovatech.vercel.app)
 
