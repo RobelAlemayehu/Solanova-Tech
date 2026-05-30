@@ -4,9 +4,9 @@
   "private": true,
   "description": "PropList - Multi-tenant property listing platform monorepo",
   "scripts": {
-    "dev": "pnpm --filter \"*\" dev",
-    "build": "pnpm --filter \"*\" build",
-    "start": "pnpm --filter \"*\" start",
+    "dev": "node init && pnpm --filter \"*\" dev",
+    "build": "node init && pnpm --filter \"*\" build",
+    "start": "node init && pnpm --filter \"*\" start",
     "lint": "eslint \"apps/**/src/**/*.{ts,tsx}\"",
     "format": "prettier --write \"apps/**/src/**/*.{ts,tsx}\""
   },

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "NEXT_TELEMETRY_DISABLED=1 NEXT_IGNORE_INCORRECT_LOCKFILE=true next dev",
-    "build": "NEXT_IGNORE_INCORRECT_LOCKFILE=true next build",
-    "start": "NEXT_IGNORE_INCORRECT_LOCKFILE=true next start",
+    "dev": "node init && NEXT_TELEMETRY_DISABLED=1 NEXT_IGNORE_INCORRECT_LOCKFILE=true next dev",
+    "build": "node init && NEXT_IGNORE_INCORRECT_LOCKFILE=true next build",
+    "start": "node init && NEXT_IGNORE_INCORRECT_LOCKFILE=true next start",
     "lint": "NEXT_IGNORE_INCORRECT_LOCKFILE=true next lint"
   },
   "dependencies": {

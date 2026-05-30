@@ -163,6 +163,46 @@ Follow this sequence to avoid dependency errors:
 
 ---
 
+### PATCH /auth/profile
+
+**Description:** Updates the currently authenticated user's profile. Can be used to change display name, email, or password.
+
+| Field          | Value        |
+|----------------|--------------|
+| Auth required  | Bearer Token |
+| Required role  | —            |
+
+**Request Body** _(all fields optional)_**:**
+```json
+{
+  "displayName": "John Doe",
+  "email": "john.new@example.com",
+  "currentPassword": "OldPassword123!",
+  "newPassword": "NewPassword123!"
+}
+```
+
+**Success Response — `200 OK`:**
+```json
+{
+  "_id": "64a1f2c3e4b5d6f7a8b9c0d1",
+  "email": "john.new@example.com",
+  "role": "owner",
+  "displayName": "John Doe",
+  "createdAt": "2024-06-01T08:00:00.000Z",
+  "updatedAt": "2024-06-02T10:00:00.000Z"
+}
+```
+
+**Error Responses:**
+
+| Status | When it occurs |
+|--------|----------------|
+| `400 Bad Request` | Invalid fields or current password missing when setting new password |
+| `401 Unauthorized` | No token or invalid token / incorrect current password |
+
+---
+
 ## PROPERTIES Endpoints
 
 ---
@@ -629,3 +669,65 @@ GET {{baseUrl}}/favorites?page=1&limit=10
 | Status | When it occurs |
 |--------|----------------|
 | `401 Unauthorized` | No or invalid token |
+
+---
+
+## ADMIN Endpoints
+
+---
+
+### GET /admin/metrics
+
+**Description:** Returns platform-wide statistics for the admin dashboard.
+
+| Field          | Value        |
+|----------------|--------------|
+| Auth required  | Bearer Token |
+| Required role  | `admin`      |
+
+**Request Body:** None
+
+**Success Response — `200 OK`:**
+```json
+{
+  "totalProperties": 150,
+  "totalPublished": 120,
+  "totalDraft": 20,
+  "totalArchived": 10,
+  "totalUsers": 500,
+  "totalOwners": 50
+}
+```
+
+**Error Responses:**
+
+| Status | When it occurs |
+|--------|----------------|
+| `401 Unauthorized` | No or invalid token |
+| `403 Forbidden` | Authenticated user does not have the `admin` role |
+
+---
+
+## HEALTH Endpoints
+
+---
+
+### GET /health
+
+**Description:** Health check endpoint to verify that the API is running.
+
+| Field          | Value |
+|----------------|-------|
+| Auth required  | None  |
+| Required role  | —     |
+
+**Request Body:** None
+
+**Success Response — `200 OK`:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-06-02T12:00:00.000Z"
+}
+```
+
