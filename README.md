@@ -6,11 +6,9 @@ A full-stack property listing platform built for the Intern Staff Developer prac
 
 | Service  | URL |
 |----------|-----|
-| Frontend | _Deploy to Vercel — set `NEXT_PUBLIC_API_URL` to your backend URL_ |
-| Backend  | _Deploy to Railway/Render — see [Deployment](#deployment)_ |
-| API Docs | `{BACKEND_URL}/api/docs` (Swagger UI) |
-
-> Replace the placeholder URLs above after deploying. See the deployment section below.
+| Frontend | [https://solanovatech.vercel.app](https://solanovatech.vercel.app) |
+| Backend  | [https://solanova-tech-10.onrender.com/api](https://solanova-tech-10.onrender.com/api) |
+| API Docs | [https://solanova-tech-10.onrender.com/api/docs](https://solanova-tech-10.onrender.com/api/docs) (Swagger UI) |
 
 ---
 
@@ -146,29 +144,31 @@ All API routes are prefixed with `/api`.
 
 ## Deployment
 
-### Backend (Railway / Render / Fly.io)
+### Backend (Render)
 
-1. Create a new service pointing to `apps/backend`
+**Live:** [https://solanova-tech-10.onrender.com/api](https://solanova-tech-10.onrender.com/api)
+
+1. Create a new **Web Service** on Render pointing to this repo
 2. Set environment variables:
    - `NODE_ENV=production`
    - `DATABASE_URL` — MongoDB Atlas connection string
    - `JWT_SECRET` — long random string
    - `CLOUDINARY_URL` — Cloudinary credentials
-   - `PORT` — platform-assigned (Railway sets this automatically)
-3. Build command: `npm install && npm run build`
-4. Start command: `npm run start:prod`
+   - `PORT` — Render sets this automatically
+3. Build command: `cd apps/backend && npm install && npm run build`
+4. Start command: `cd apps/backend && npm run start:prod`
 5. Run `npm run seed:admin` once to create the admin user
 
-A `railway.toml` is included at the repo root for Railway deployments.
+A `railway.toml` is also included at the repo root for Railway deployments.
 
 ### Frontend (Vercel)
 
-1. Import the repo, set root directory to `apps/frontend`
-2. Set environment variable:
-   - `NEXT_PUBLIC_API_URL=https://your-backend.railway.app/api`
-3. Deploy
+**Live:** [https://solanovatech.vercel.app](https://solanovatech.vercel.app)
 
-A `vercel.json` is included in `apps/frontend`.
+1. Import the repo and set the **Root Directory** to `apps/frontend` in Vercel project settings
+2. Set environment variable:
+   - `NEXT_PUBLIC_API_URL=https://solanova-tech-10.onrender.com/api`
+3. Deploy — Vercel auto-detects pnpm from `pnpm-lock.yaml` and installs dependencies correctly
 
 ### Database (MongoDB Atlas)
 
